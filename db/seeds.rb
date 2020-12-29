@@ -54,6 +54,7 @@ netflix = Service.create(name: "netflix")
 chase = Service.create(name: "chase")
                         # required_access: "any", 
                         # service_username: "jsmith001"
+hulu = Service.create(name: "hulu")
 
 ############# Make GroupServices ################
 jf1 = GroupService.create(group_id: john_family.id,
