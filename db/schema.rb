@@ -10,7 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_12_29_181935) do
+ActiveRecord::Schema.define(version: 2020_12_29_193401) do
+
+  create_table "group_services", force: :cascade do |t|
+    t.integer "group_id"
+    t.integer "service_id"
+    t.string "required_access"
+    t.string "service_username"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "groups", force: :cascade do |t|
     t.string "name"
@@ -19,7 +28,7 @@ ActiveRecord::Schema.define(version: 2020_12_29_181935) do
   end
 
   create_table "passwords", force: :cascade do |t|
-    t.integer "service_id"
+    t.integer "group_service_id"
     t.string "password"
     t.boolean "current"
     t.datetime "created_at", null: false
@@ -27,15 +36,12 @@ ActiveRecord::Schema.define(version: 2020_12_29_181935) do
   end
 
   create_table "services", force: :cascade do |t|
-    t.integer "group_id"
     t.string "name"
-    t.string "required_access"
-    t.string "service_username"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "usergroups", force: :cascade do |t|
+  create_table "user_groups", force: :cascade do |t|
     t.integer "group_id"
     t.integer "user_id"
     t.datetime "created_at", null: false
