@@ -21,13 +21,16 @@ class Group < ActiveRecord::Base
 
   def add_user_to_group(user)
     UserGroup.create(user_id: user.id, group_id: self.id)
-    puts "🥳 Service removed!"
+    puts "🥳 User Added!"
   end
 
   def remove_user_from_group(user)
     association = UserGroup.find_by(user_id: user.id, group_id: self.id)
     association.destroy
-    puts "☠️ Service removed!"
+    puts "☠️ User Removed!"
   end
+
+  
+
 
 end
