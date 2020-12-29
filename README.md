@@ -7,8 +7,8 @@
 ## 4. delete their app_account (should not impact any data) - done
 
 # GROUP should be able to:
-## 1. make a new group_service (add a service)
-## 2. remove a service from their group (deleting their group_service)
+## 1. make a new group_service (add a service) - done
+## 2. remove a service from their group (deleting their group_service) - done
 ## 3. add a user to the group 
 ## 4. remove a user from the group (admin access only)
 ## 5. change the password of a service
