@@ -9,11 +9,12 @@
 # GROUP should be able to:
 ## 1. make a new group_service (add a service) - done
 ## 2. remove a service from their group (deleting their group_service) - done
-## 3. add a user to the group 
-## 4. remove a user from the group (admin access only)
+## 3. add a user to the group  - done
+## 4. remove a user from the group (admin access only) - done
 ## 5. change the password of a service
 ## 6. change the required access for a group_service
 ## 7. change the service_username
+## 8. View all users
 
 # GROUPSERVICE
 ## 1. Print service_name, username & current password.
