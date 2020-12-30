@@ -21,4 +21,5 @@ class User < ActiveRecord::Base
         self.groups.map(&:name)
     end
 
+
 end

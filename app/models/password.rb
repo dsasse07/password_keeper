@@ -1,10 +1,10 @@
 class Password < ActiveRecord::Base
-    belongs_to :service
+    belongs_to :group_service
 
-    after_create do
-      secure_password = random_password
-      self.update(password: secure_password, current: true)
-    end
+    # after_create do
+    #   secure_password = random_password
+    #   self.update(password: secure_password, current: true)
+    # end
 
 
     @@numbers = (0..9).to_a

@@ -4,10 +4,15 @@ class PasswordKeeper
   # it is not an AR class so you need to add attr
 
   def run
+    @user = ""
     welcome
     login_or_signup
-    display_users_groups
-    # get_joke(what_subject)
+    say_hi_to_user
+    initial_menu
+
+
+    # display_users_groups
+    
   end
 
   private
@@ -29,13 +34,36 @@ class PasswordKeeper
     when "Quit"
       system 'clear'
     end
-    # @user = User.find_by(app_username: username)
   end
+
+  def say_hi_to_user
+    puts "Welcome #{@user.first_name}"
+  end
+
+  def initial_menu
+    choices = ["Access Passwords, Access User Settings, Access Group Settings, Logout"]
+    selection = @@prompt.select("What would you like to do today?", choices)
+    case selection
+    when "Access Passwords user" 
+      access_passwords
+    when "Access User Settings"
+      # user_settings
+    when "Access Group Settings"
+      # group_settings
+    when "Logout"
+      run
+      system 'clear'
+    end
+  end
+
+#################### Access Passwords ##################################
+
+
 
   ########### existing user ###########
 
   def handle_existing_user
-   @user = gather_existing_data
+    @user = gather_existing_data
   end
 
   def gather_existing_data
@@ -64,19 +92,38 @@ class PasswordKeeper
   ########### new user ###########
 
   def handle_new_user
-    new_user_info = gather_new_user_data
-    User.create(new_user_info)
+    @new_user_info = gather_new_user_data
+    User.create(@new_user_info)
   end
 
   def gather_new_user_data
-    while 0==0 
       system 'clear'
-      new_user_info = new_user_input
-      repeat_password = @@prompt.mask("Re-enter your PasswordKeeper to confirm", required: true, mask: @@heart)
-      return new_user_info if passwords_match?(new_user_info, repeat_password)
-      puts "⚠️  ⚠️  Passwords do not match. Please re-enter your information ⚠️  ⚠️"
-      @@prompt.keypress("Press space or enter to continue", keys: [:space, :return])
-    end
+      @new_user_info = new_user_input
+      @repeat_password = @@prompt.mask("Re-enter your PasswordKeeper to confirm: ", required: true, mask: @@heart)
+      validate_new_user_credentials
+
+  end
+
+  def validate_new_user_credentials
+    app_username_available? ? @new_user_info : name_taken
+    passwords_match? ? @new_user_info : password_mismatch
+  end
+
+  def name_taken
+    puts "⚠️  ⚠️  This username has already been taken. Please choose a new PasswordKeeper username ⚠️  ⚠️"
+    @@prompt.keypress("Press space or enter to continue", keys: [:space, :return])
+    gather_new_user_data
+  end
+
+  def app_username_available?
+    username = @new_user_info[:app_username]
+    User.find_by(app_username: username).nil?
+  end
+
+  def password_mismatch
+    puts "⚠️  ⚠️  Passwords do not match. Please re-enter your information ⚠️  ⚠️"
+    @@prompt.keypress("Press space or enter to continue", keys: [:space, :return])
+    gather_new_user_data
   end
 
   def new_user_input
@@ -88,24 +135,19 @@ class PasswordKeeper
     end
   end
 
-  def passwords_match?(new_user_info, repeat_password)
-    new_user_info[:app_password] == repeat_password
+  def passwords_match?
+    @new_user_info[:app_password] == @repeat_password
   end
 
   ######### user's group functions #########
 
-  def display_users_groups
-    selection = @@prompt.select("Here are your groups, which one would you like to access? ", @user.display_groups)
-    group = Group.find_by(name: selection)
-    user_group = UserGroup.find_by(group_id: group.id, user_id: @user.id)
-    user_group.services
-    binding.pry
-    # case selection
-  end
-
-
-#   choices = {"Scorpion" => 1, "Kano" => 2, "Jax" => 3}
-# prompt.select("Choose your destiny?", choices)
-
+  # def display_users_groups
+  #   selection = @@prompt.select("Here are your groups, which one would you like to access? ", @user.display_groups)
+  #   group = Group.find_by(name: selection)
+  #   user_group = UserGroup.find_by(group_id: group.id, user_id: @user.id)
+  #   user_group.services
+  #   binding.pry
+  #   # case selection
+  # end
 
 end

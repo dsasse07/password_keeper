@@ -30,7 +30,25 @@ class Group < ActiveRecord::Base
     puts "☠️ User Removed!"
   end
 
-  
+  def display_passwords_for_group
+    services = self.services
+    usernames = self.group_services.map(&:service_username)
+    passwords = self.group_services.map do |group_service|
+        Password.find_by(current: true, group_service_id: group_service.id)
+    end
+
+    i = 0
+    while i < services.length do 
+      puts "#{services[i].name.upcase}"                 
+      puts "--------------------"
+      puts "Username: #{usernames[i]}"
+      puts "Password: #{passwords[i].password}"
+      puts "\n"
+      i += 1
+    end
+  end
+
+
 
 
 end
