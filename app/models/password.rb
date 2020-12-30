@@ -19,4 +19,8 @@ class Password < ActiveRecord::Base
       symbols_included.empty? ? random_password : secure_password
     end
 
+    def calculate_age_in_days
+      (DateTime.now - (self.created_at).to_datetime).to_i
+    end
+
   end

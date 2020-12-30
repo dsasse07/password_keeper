@@ -41,10 +41,10 @@ class PasswordKeeper
   end
 
   def initial_menu
-    choices = ["Access Passwords, Access User Settings, Access Group Settings, Logout"]
+    choices = ["Access Passwords", "Access User Settings", "Access Group Settings", "Logout"]
     selection = @@prompt.select("What would you like to do today?", choices)
     case selection
-    when "Access Passwords user" 
+    when "Access Passwords" 
       access_passwords
     when "Access User Settings"
       # user_settings
@@ -58,7 +58,34 @@ class PasswordKeeper
 
 #################### Access Passwords ##################################
 
+def access_passwords
+  system 'clear'
+  print_all_passwords
+  choices = ["Change Password", "Logout"]
+  selection = @@prompt.select("What would you like to do?", choices)
+  case selection
+  when "Change Password"
+    group = select_group
+    service = select_service
+  when "Logout"
+    run
+    system 'clear'
+  end
+end
 
+def select_group
+  choices = @user.create_group_menu_choices
+  selection = @@prompt.select("Which group's service would you like change?", choices)
+end
+
+def select_service
+  choices = ["Change Password", "Logout"]
+  selection = @@prompt.select("What would you like to do?", choices)
+end
+
+def print_all_passwords
+  @user.groups.each {|group| group.display_passwords_for_group}
+end
 
   ########### existing user ###########
 

@@ -6,4 +6,9 @@ class GroupService < ActiveRecord::Base
   after_create do
     self.update(required_access: "any") if self.required_access.blank? 
   end
+
+  def name_by_group_service_hash
+    {self.service.name => self}
+  end
+  
 end

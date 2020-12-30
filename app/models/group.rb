@@ -31,24 +31,28 @@ class Group < ActiveRecord::Base
   end
 
   def display_passwords_for_group
-    services = self.services
+    services = self.get_services_for_group
     usernames = self.group_services.map(&:service_username)
     passwords = self.group_services.map do |group_service|
         Password.find_by(current: true, group_service_id: group_service.id)
     end
 
+    puts "#{self.name.upcase} Login Credentials:"
+    puts "\n"
     i = 0
     while i < services.length do 
       puts "#{services[i].name.upcase}"                 
       puts "--------------------"
       puts "Username: #{usernames[i]}"
       puts "Password: #{passwords[i].password}"
+      puts "This password is #{passwords[i].calculate_age_in_days} days old."
       puts "\n"
       i += 1
     end
   end
 
-
-
+  def get_services_for_group
+    self.services
+  end
 
 end

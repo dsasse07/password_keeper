@@ -21,5 +21,10 @@ class User < ActiveRecord::Base
         self.groups.map(&:name)
     end
 
+    def create_group_menu_choices
+        self.groups.each_with_object({}) do |group, new_hash|
+          new_hash[group.name] = group
+        end
+      end
 
 end
