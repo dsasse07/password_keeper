@@ -24,3 +24,19 @@
 ## 2. see how many days have passed since password was last changed.
 ## 3. get password history (avoid using duplicate password, or old password)
 ## 4. delete their app_account (should not impact any data)
+
+#### CLI #####
+# 1. User settings
+##  a. Change Username
+#   b. Change Password
+#
+
+# 2. Group Settings
+##  a. Add a group
+##  b. Leave group
+
+# 3. Passwords
+## a. View Passwords (by group)
+## b. Update passwords
+## c. generate a new password
+
