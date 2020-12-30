@@ -6,9 +6,9 @@ module CliControls
   # Overwriting the "yes?" method given by TTY prompt to have custom answers
   def yes_no(question_str)
       @@prompt.yes?(question_str) do |q|
-      q.suffix "Yup!/Nope, I'm boring"
-      q.positive "Yup!"
-      q.negative "Nope, I'm boring"
+      q.suffix "Yes/No"
+      q.positive "Yes"
+      q.negative "No"
       end
   end
 

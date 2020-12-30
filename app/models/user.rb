@@ -17,4 +17,8 @@ class User < ActiveRecord::Base
         self.destroy
     end
 
+    def display_groups
+        self.groups.map(&:name)
+    end
+
 end
