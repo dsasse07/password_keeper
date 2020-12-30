@@ -10,5 +10,10 @@ class GroupService < ActiveRecord::Base
   def name_by_group_service_hash
     {self.service.name => self}
   end
+
+  def current_password
+    Password.find_by(group_service_id: self.id, current: true)
+  end
+
   
 end

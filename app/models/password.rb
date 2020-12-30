@@ -1,10 +1,9 @@
 class Password < ActiveRecord::Base
     belongs_to :group_service
 
-    # after_create do
-    #   secure_password = random_password
-    #   self.update(password: secure_password, current: true)
-    # end
+    after_create do
+      self.update(current: true)
+    end
 
 
     @@numbers = (0..9).to_a
@@ -13,10 +12,11 @@ class Password < ActiveRecord::Base
     @@symbols = ["@", "#", "!", "$"]
     CHARS = @@numbers + @@lower_case + @@upper_case + @@symbols
 
-    def random_password(length = 15)
+    def set_random_password(length = 15)
       secure_password = CHARS.sort_by { rand }.join[0..length]
       symbols_included = @@symbols.select {|symbol| secure_password.include?(symbol)}
-      symbols_included.empty? ? random_password : secure_password
+      symbols_included.empty? ? set_random_password : secure_password
+      self.update(password: secure_password)
     end
 
     def calculate_age_in_days

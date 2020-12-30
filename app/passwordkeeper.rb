@@ -69,13 +69,39 @@ def password_action_selection
   selection = @@prompt.select("What would you like to do?", choices)
   case selection
   when "Change Password"
-    @group = select_group
-    @service = select_service
-    #update password
+    change_password_handler
   when "Logout"
     run
     system 'clear'
   end
+end
+
+def change_password_handler
+  @group = select_group
+  @service = select_service
+  update_password  
+  #Generate random & update
+  #update password
+end
+
+def update_password
+  group_service = GroupService.find_by(group_id: @group.id, service_id: @service.id)
+  group_service.current_password.update(current: false)
+  new_password = Password.new(group_service_id: group_service.id)
+  if secure_password?
+    new_password.set_random_password
+  else
+    new_password.update(password: enter_custom_password)
+  end
+  puts " ✅ Your password for #{@service.name} has been changed to:  #{new_password.password}."
+end
+  
+def enter_custom_password
+  @@prompt.ask("What password would you like to use for #{@service.name}?")
+end
+
+def secure_password?
+  yes_no("🔒 🔒 Would you like to generate a SUPER-DUPER secure password 🔒 🔒")
 end
 
 def select_group
