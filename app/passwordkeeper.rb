@@ -61,12 +61,17 @@ class PasswordKeeper
 def access_passwords
   system 'clear'
   print_all_passwords
+  password_action_selection
+end
+
+def password_action_selection
   choices = ["Change Password", "Logout"]
   selection = @@prompt.select("What would you like to do?", choices)
   case selection
   when "Change Password"
-    group = select_group
-    service = select_service
+    @group = select_group
+    @service = select_service
+    #update password
   when "Logout"
     run
     system 'clear'
@@ -75,12 +80,12 @@ end
 
 def select_group
   choices = @user.create_group_menu_choices
-  selection = @@prompt.select("Which group's service would you like change?", choices)
+  group_selection = @@prompt.select("Which group's service would you like change?", choices)
 end
 
 def select_service
-  choices = ["Change Password", "Logout"]
-  selection = @@prompt.select("What would you like to do?", choices)
+  choices = @group.create_service_menu_choices
+  selection = @@prompt.select("Which service's password would you like change?", choices)
 end
 
 def print_all_passwords

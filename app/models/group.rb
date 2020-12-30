@@ -31,7 +31,7 @@ class Group < ActiveRecord::Base
   end
 
   def display_passwords_for_group
-    services = self.get_services_for_group
+    services = self.services
     usernames = self.group_services.map(&:service_username)
     passwords = self.group_services.map do |group_service|
         Password.find_by(current: true, group_service_id: group_service.id)
@@ -51,8 +51,11 @@ class Group < ActiveRecord::Base
     end
   end
 
-  def get_services_for_group
-    self.services
+
+  def create_service_menu_choices
+    self.services.each_with_object({}) do |service, new_hash|
+        new_hash[service.name] = service
+    end
   end
 
 end
