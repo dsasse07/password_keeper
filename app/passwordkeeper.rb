@@ -37,6 +37,7 @@ class PasswordKeeper
   end
 
   def say_hi_to_user
+    binding.pry
     puts "Welcome #{@user.first_name}"
   end
 
@@ -55,6 +56,36 @@ class PasswordKeeper
       system 'clear'
     end
   end
+
+######################## User Settings ############################
+def user_settings
+  system 'clear'
+  print_user_info
+  user_settings_action_selection
+end
+
+def print_user_info
+  @user.print_app_login_info
+end
+
+def user_settings_action_selection
+  choices = ["Change PasswordKeeper Username", "Change PasswordKeeper Password", "Logout"]
+  selection = @@prompt.select("What would you like to do?", choices)
+  case selection
+  when "Change PasswordKeeper Username"
+    change_app_username_handler
+  when "Change PasswordKeeper Password"
+    # change_app_password_handler
+  when "Logout"
+    run
+    system 'clear'
+  end
+end
+
+def change_app_username_handler
+  new_app_username = @@prompt.ask("Please enter your new PasswordKeeper username: ", required: true)
+end
+
 
 #################### Access Passwords ##################################
 
@@ -151,7 +182,7 @@ end
 
   def handle_new_user
     @new_user_info = gather_new_user_data
-    User.create(@new_user_info)
+    @user = User.create(@new_user_info)
   end
 
   def gather_new_user_data
@@ -163,8 +194,8 @@ end
   end
 
   def validate_new_user_credentials
-    app_username_available? ? @new_user_info : name_taken
-    passwords_match? ? @new_user_info : password_mismatch
+    app_username_available?(@new_user_info[:app_username]) ? @new_user_info : name_taken
+    passwords_match?(@new_user_info[:app_password]) ? @new_user_info : password_mismatch
   end
 
   def name_taken
@@ -173,8 +204,7 @@ end
     gather_new_user_data
   end
 
-  def app_username_available?
-    username = @new_user_info[:app_username]
+  def app_username_available?(username)
     User.find_by(app_username: username).nil?
   end
 
@@ -193,8 +223,8 @@ end
     end
   end
 
-  def passwords_match?
-    @new_user_info[:app_password] == @repeat_password
+  def passwords_match?(password)
+    password == @repeat_password
   end
 
   ######### user's group functions #########

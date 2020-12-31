@@ -27,4 +27,14 @@ class User < ActiveRecord::Base
         end
     end
 
+    def print_app_login_info
+        puts "Current PasswordKeeper Credentials:"
+        puts "\n"
+        puts "Username: #{self.app_username}"
+        puts "Password: #{self.app_password}"
+        puts "Access Level: #{self.role}"
+        puts "\n"
+    end
+
+
 end
