@@ -27,9 +27,8 @@
 
 #### CLI #####
 # 1. User settings
-##  a. Change Username
-#   b. Change Password
-#
+##  a. Change Username - done
+#   b. Change Password - wip
 
 # 2. Group Settings
 ##  a. Add a group

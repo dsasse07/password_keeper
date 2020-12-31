@@ -69,13 +69,15 @@ def print_user_info
 end
 
 def user_settings_action_selection
-  choices = ["Change PasswordKeeper Username", "Change PasswordKeeper Password", "Logout"]
+  choices = ["Change PasswordKeeper Username", "Change PasswordKeeper Password", "Back", "Logout"]
   selection = @@prompt.select("What would you like to do?", choices)
   case selection
   when "Change PasswordKeeper Username"
     change_app_username_handler
   when "Change PasswordKeeper Password"
     change_app_password_handler
+  when "Back"
+    initial_menu
   when "Logout"
     run
     system 'clear'
@@ -125,11 +127,13 @@ def access_passwords
 end
 
 def password_action_selection
-  choices = ["Change Password", "Logout"]
+  choices = ["Change Password", "Back", "Logout"]
   selection = @@prompt.select("What would you like to do?", choices)
   case selection
   when "Change Password"
     change_password_handler
+  when "Back"
+    initial_menu
   when "Logout"
     run
     system 'clear'
