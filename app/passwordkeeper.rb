@@ -213,6 +213,7 @@ end
 
   def handle_new_user
     @new_user_info = gather_new_user_data
+    @user = User.create(@new_user_info)
   end
 
   def gather_new_user_data
@@ -220,7 +221,7 @@ end
       @new_user_info = new_user_input
       @repeat_password = @@prompt.mask("Re-enter your PasswordKeeper to confirm: ", required: true, mask: @@heart)
       gather_new_user_data if !(validate_new_user_credentials == @new_user_info)
-      @user = User.create(@new_user_info)
+      @new_user_info
   end
 
   def validate_new_user_credentials
@@ -271,13 +272,16 @@ end
     system 'clear'
     # binding.pry
     @user.print_groups
-    choices = ["Add a Group", "Leave a Group", "Back", "Logout"]
+    choices = ["Add a Group", "Leave a Group", "Add user to existing group", "Back", "Logout"]
     selection = @@prompt.select("What would you like to do?", choices)
     case selection
     when "Add a Group"
       create_user_group
     when "Leave a Group"
       leave_user_group
+    when "Add user to existing group"
+      @group_to_add_to = select_group
+      add_user_to_existing_group
     when "Back"
       initial_menu
     when "Logout"
@@ -311,5 +315,29 @@ end
       group_settings
   end
 
+  def add_user_to_existing_group
+    username_to_add = @@prompt.ask("Enter the username of the user you would like to add to the group: ") { |q| q.modify :down}
+    @user_to_add = User.find_by(app_username: username_to_add)
+    if @user_to_add.nil?
+      puts "⚠️ No user found with this username ⚠️"
+      choices = ["Re-enter Username", "Create New User", "Back"]
+      selection = @@prompt.select("What would you like to do?", choices)
+      case selection
+      when "Re-enter Username"
+        add_user_to_existing_group
+      when "Create New User"
+        @user_to_add = gather_new_user_data
+        @user_to_add = User.create(@user_to_add)
+        puts "✅ #{@user_to_add.app_username} has been created."
+        sleep (1.0)
+      when "Back"
+        group_settings
+      end
+    end
+    UserGroup.create(group_id: @group_to_add_to.id, user_id: @user_to_add.id)
+    puts "✅ #{@user_to_add.app_username} has been added to #{@group_to_add_to.name.capitalize}."
+    @@prompt.keypress("Press space or enter to continue", keys: [:space, :return])
+    group_settings
+  end
 
 end
