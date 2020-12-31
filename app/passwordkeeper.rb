@@ -37,7 +37,7 @@ class PasswordKeeper
   end
 
   def say_hi_to_user
-    binding.pry
+    # binding.pry
     puts "Welcome #{@user.first_name}"
   end
 
@@ -75,7 +75,7 @@ def user_settings_action_selection
   when "Change PasswordKeeper Username"
     change_app_username_handler
   when "Change PasswordKeeper Password"
-    # change_app_password_handler
+    change_app_password_handler
   when "Logout"
     run
     system 'clear'
@@ -95,6 +95,23 @@ def validate_new_username
   if !app_username_available?(@new_app_username)
     name_taken
     change_app_username_handler
+  end
+end
+
+def change_app_password_handler
+  @new_app_password = @@prompt.mask("Please enter your new PasswordKeeper password: ", required: true, mask: @@heart)
+  @repeat_password = @@prompt.mask("Re-enter your PasswordKeeper to confirm: ", required: true, mask: @@heart)
+  validate_new_password
+  @user.update(app_password: @new_app_password)
+  puts "✅ Your PasswordKeeper password has been updated to #{@user.app_password}."
+  @@prompt.keypress("Press space or enter to return to User Settings Menu", keys: [:space, :return])
+  user_settings
+end
+
+def validate_new_password
+  if !passwords_match?(@new_app_password)
+    password_mismatch
+    change_app_password_handler
   end
 end
 
