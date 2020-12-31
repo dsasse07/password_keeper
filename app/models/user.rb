@@ -18,11 +18,20 @@ class User < ActiveRecord::Base
     end
 
     def display_groups
-        self.groups.map(&:name)
+        self.groups.reload.map(&:name)
+    end
+
+    def print_groups
+        puts "CURRENT GROUPS"
+        puts "---------------"
+        self.display_groups.each do |group| 
+            puts group.capitalize 
+        end
+        puts "---------------"
     end
 
     def create_group_menu_choices
-        self.groups.each_with_object({}) do |group, new_hash|
+        self.groups.reload.each_with_object({}) do |group, new_hash|
             new_hash[group.name] = group
         end
     end

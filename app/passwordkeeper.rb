@@ -50,7 +50,7 @@ class PasswordKeeper
     when "Access User Settings"
       user_settings
     when "Access Group Settings"
-      # group_settings
+      group_settings
     when "Logout"
       run
       system 'clear'
@@ -267,7 +267,39 @@ end
     password == @repeat_password
   end
 
-  ######### user's group functions #########
+  ######### group settings #########
+
+  def group_settings
+    system 'clear'
+    # binding.pry
+    @user.print_groups
+    choices = ["Add a Group", "Leave a Group", "Back", "Logout"]
+    selection = @@prompt.select("What would you like to do?", choices)
+    case selection
+    when "Add a Group"
+      create_user_group
+    when "Leave a Group"
+      # destroy_user_group
+    when "Back"
+      initial_menu
+    when "Logout"
+      system 'clear'
+      run
+    end
+  end
+
+  def create_user_group
+    @new_group_name = @@prompt.ask("What would you like your new group to be called?")
+    new_group = Group.find_or_create_by(name: @new_group_name)
+    if UserGroup.find_by(user_id: @user.id, group_id: new_group.id).nil?
+      UserGroup.create(user_id: @user.id, group_id: new_group.id)
+      puts "✅ New group has been created!"
+    else
+      puts "⚠️ ⚠️ You already have a group with this name ⚠️ ⚠️"
+    end
+    @@prompt.keypress("Press space or enter to return to Group Settings Menu", keys: [:space, :return])
+    group_settings
+  end
 
   # def display_users_groups
   #   selection = @@prompt.select("Here are your groups, which one would you like to access? ", @user.display_groups)
