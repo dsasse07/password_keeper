@@ -48,7 +48,7 @@ class PasswordKeeper
     when "Access Passwords" 
       access_passwords
     when "Access User Settings"
-      # user_settings
+      user_settings
     when "Access Group Settings"
       # group_settings
     when "Logout"
@@ -83,7 +83,19 @@ def user_settings_action_selection
 end
 
 def change_app_username_handler
-  new_app_username = @@prompt.ask("Please enter your new PasswordKeeper username: ", required: true)
+  @new_app_username = @@prompt.ask("Please enter your new PasswordKeeper username: ", required: true)
+  validate_new_username
+  @user.update(app_username: @new_app_username)
+  puts "✅ Your PasswordKeeper username has been updated to #{@user.app_username}."
+  @@prompt.keypress("Press space or enter to return to User Settings Menu", keys: [:space, :return])
+  user_settings
+end
+
+def validate_new_username
+  if !app_username_available?(@new_app_username)
+    name_taken
+    change_app_username_handler
+  end
 end
 
 
@@ -182,26 +194,34 @@ end
 
   def handle_new_user
     @new_user_info = gather_new_user_data
-    @user = User.create(@new_user_info)
   end
 
   def gather_new_user_data
       system 'clear'
       @new_user_info = new_user_input
       @repeat_password = @@prompt.mask("Re-enter your PasswordKeeper to confirm: ", required: true, mask: @@heart)
-      validate_new_user_credentials
-
+      gather_new_user_data if !(validate_new_user_credentials == @new_user_info)
+      @user = User.create(@new_user_info)
   end
 
   def validate_new_user_credentials
-    app_username_available?(@new_user_info[:app_username]) ? @new_user_info : name_taken
-    passwords_match?(@new_user_info[:app_password]) ? @new_user_info : password_mismatch
+    if app_username_available?(@new_user_info[:app_username])
+      return @new_user_info
+    else 
+      name_taken
+      return false
+    end
+    if passwords_match?(@new_user_info[:app_password])
+      return @new_user_info
+    else 
+      password_mismatch
+      return false
+    end
   end
 
   def name_taken
     puts "⚠️  ⚠️  This username has already been taken. Please choose a new PasswordKeeper username ⚠️  ⚠️"
     @@prompt.keypress("Press space or enter to continue", keys: [:space, :return])
-    gather_new_user_data
   end
 
   def app_username_available?(username)
@@ -211,7 +231,6 @@ end
   def password_mismatch
     puts "⚠️  ⚠️  Passwords do not match. Please re-enter your information ⚠️  ⚠️"
     @@prompt.keypress("Press space or enter to continue", keys: [:space, :return])
-    gather_new_user_data
   end
 
   def new_user_input
