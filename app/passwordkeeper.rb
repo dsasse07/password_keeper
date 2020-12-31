@@ -144,8 +144,6 @@ def change_password_handler
   @group = select_group
   @service = select_service
   update_password  
-  #Generate random & update
-  #update password
 end
 
 def update_password
@@ -170,7 +168,7 @@ end
 
 def select_group
   choices = @user.create_group_menu_choices
-  group_selection = @@prompt.select("Which group's service would you like change?", choices)
+  group_selection = @@prompt.select("Which group would you like to select?", choices)
 end
 
 def select_service
@@ -279,7 +277,7 @@ end
     when "Add a Group"
       create_user_group
     when "Leave a Group"
-      # destroy_user_group
+      leave_user_group
     when "Back"
       initial_menu
     when "Logout"
@@ -289,7 +287,7 @@ end
   end
 
   def create_user_group
-    @new_group_name = @@prompt.ask("What would you like your new group to be called?")
+    @new_group_name = @@prompt.ask("What would you like your new group to be called?") { |q| q.modify :down}
     new_group = Group.find_or_create_by(name: @new_group_name)
     if UserGroup.find_by(user_id: @user.id, group_id: new_group.id).nil?
       UserGroup.create(user_id: @user.id, group_id: new_group.id)
@@ -301,13 +299,17 @@ end
     group_settings
   end
 
-  # def display_users_groups
-  #   selection = @@prompt.select("Here are your groups, which one would you like to access? ", @user.display_groups)
-  #   group = Group.find_by(name: selection)
-  #   user_group = UserGroup.find_by(group_id: group.id, user_id: @user.id)
-  #   user_group.services
-  #   binding.pry
-  #   # case selection
-  # end
+
+  def leave_user_group
+    group_to_leave = select_group
+    if yes_no("⚠️ ⚠️ Are you sure you want to leave this group? This action cannot be undone. ⚠️ ⚠️")
+      user_group = UserGroup.find_by(user_id: @user.id, group_id: group_to_leave.id)
+      user_group.destroy
+      puts "☠️ ☠️ You have left the group ☠️ ☠️"
+      sleep (1.5)
+    end
+      group_settings
+  end
+
 
 end

@@ -32,7 +32,7 @@ class User < ActiveRecord::Base
 
     def create_group_menu_choices
         self.groups.reload.each_with_object({}) do |group, new_hash|
-            new_hash[group.name] = group
+            new_hash[group.name.capitalize] = group
         end
     end
 
