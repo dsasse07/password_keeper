@@ -33,6 +33,7 @@ class PasswordKeeper
       handle_existing_user
     when "Quit"
       system 'clear'
+      exit
     end
   end
 
@@ -143,19 +144,19 @@ end
 def change_password_handler
   @group = select_group
   @service = select_service
-  update_password  
+  update_password(@group, @service) 
 end
 
-def update_password
-  group_service = GroupService.find_by(group_id: @group.id, service_id: @service.id)
-  group_service.current_password.update(current: false)
-  new_password = Password.new(group_service_id: group_service.id)
+def update_password(group, service)
+  group_service = GroupService.find_by(group_id: group.id, service_id: service.id)
+  group_service.current_password.update(current: false) if !group_service.current_password.nil?
+  new_password = Password.create(group_service_id: group_service.id, current: true)
   if secure_password?
     new_password.set_random_password
   else
     new_password.update(password: enter_custom_password)
   end
-  puts " ✅ Your password for #{@service.name} has been changed to:  #{new_password.password}."
+  puts "✅ Your password for #{service.name} has been changed to:  #{new_password.password}."
 end
   
 def enter_custom_password
@@ -272,7 +273,7 @@ end
     system 'clear'
     # binding.pry
     @user.print_groups
-    choices = ["Add a Group", "Leave a Group", "Add user to existing group", "Back", "Logout"]
+    choices = ["Add a Group", "Leave a Group", "Add service to existing group", "Remove a service from existing group","Add user to existing group", "Back", "Logout"]
     selection = @@prompt.select("What would you like to do?", choices)
     case selection
     when "Add a Group"
@@ -282,6 +283,11 @@ end
     when "Add user to existing group"
       @group_to_add_to = select_group
       add_user_to_existing_group
+    when "Add service to existing group"
+      @group_to_add_to = select_group
+      add_service_to_group
+    when "Remove a service from existing group"
+      remove_service
     when "Back"
       initial_menu
     when "Logout"
@@ -289,6 +295,33 @@ end
       run
     end
   end
+
+  def add_service_to_group
+    new_service_name = @@prompt.ask("What service would you like to add to this group?") { |q| q.modify :down}
+    new_service = Service.find_or_create_by(name: new_service_name)
+    if GroupService.find_by(service_id: new_service.id, group_id: @group_to_add_to.id).nil?
+      GroupService.create(service_id: new_service.id, group_id: @group_to_add_to.id)
+      puts "✅ New service has been added!"
+      update_password(@group_to_add_to, new_service)
+      puts "✅ Password updated!"
+    else
+      puts "⚠️ ⚠️ You already have this service in this group ⚠️ ⚠️"
+    end
+    @@prompt.keypress("Press space or enter to return to Group Settings Menu", keys: [:space, :return])
+    group_settings
+  end
+
+  def remove_service
+    group_to_remove_service = select_group
+    choices = group_to_remove_service.create_service_menu_choices
+    selection = @@prompt.select("Which service would you like to remove?", choices)
+    if yes_no("⚠️ ⚠️ Are you sure you want to remove this service? This action cannot be undone. ⚠️ ⚠️")
+      group_to_remove_service.remove_service_from_group(selection.name)
+      sleep (1.5)
+    end
+      group_settings
+  end
+
 
   def create_user_group
     @new_group_name = @@prompt.ask("What would you like your new group to be called?") { |q| q.modify :down}

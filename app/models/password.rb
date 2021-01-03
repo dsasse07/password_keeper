@@ -1,9 +1,7 @@
 class Password < ActiveRecord::Base
     belongs_to :group_service
 
-    after_create do
-      self.update(current: true)
-    end
+
 
 
     @@numbers = (0..9).to_a
