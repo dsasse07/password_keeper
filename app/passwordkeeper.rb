@@ -128,11 +128,13 @@ def access_passwords
 end
 
 def password_action_selection
-  choices = ["Change Password", "Back", "Logout"]
+  choices = ["Change Password", "Share Password", "Back", "Logout"]
   selection = @@prompt.select("What would you like to do?", choices)
   case selection
   when "Change Password"
     change_password_handler
+  when "Share Password"
+    send_password_handler
   when "Back"
     initial_menu
   when "Logout"
@@ -145,6 +147,32 @@ def change_password_handler
   @group = select_group
   @service = select_service
   update_password(@group, @service) 
+end
+
+def send_password_handler
+  system 'clear'
+  @group = select_group
+  @service = select_service
+  @password = lookup_password
+  to_phone_number = get_receiving_number
+  @password.share_password(@user, to_phone_number)
+end
+
+def lookup_password
+  group_service = GroupService.find_by(group_id: @group.id, service_id: @service.id)
+  Password.find_by(group_service_id: group_service.id, current: true)
+end
+
+def get_receiving_number
+  number = @@prompt.ask("Please enter the 10-digit phone number you would like to send your #{@service.name} password to?") do |response|
+    response.validate(/\b[1-9]\d{9}\b/)
+    response.messages[:valid?] = 'Invalid phone number. Please enter a 10-digit phone number\n With no symbols or spaces.\n Example: 2345678901'
+  end
+  if yes_no("Are you SURE you want to send your #{@service.name} password to #{number}? (Please make sure the number is correct.")
+    return number
+  else
+    access_passwords
+  end
 end
 
 def update_password(group, service)

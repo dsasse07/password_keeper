@@ -1,7 +1,7 @@
 class Password < ActiveRecord::Base
-    belongs_to :group_service
+  belongs_to :group_service
 
-
+  include TwilioControls
 
 
     @@numbers = (0..9).to_a
@@ -21,4 +21,13 @@ class Password < ActiveRecord::Base
       (DateTime.now - (self.created_at).to_datetime).to_i
     end
 
+    def share_password(user, to_phone_number)
+      body = "#{user.display_full_name} has shared a password!\n\n
+              Service Name: #{self.group_service.service.name}\n
+              Username: #{self.group_service.service_username}\n
+              Password: #{self.password}"
+      send_sms(to: to_phone_number, body: body)
+    end
+
   end
+
