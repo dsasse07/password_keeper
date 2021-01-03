@@ -152,6 +152,7 @@ def send_password_handler
   @password = lookup_password
   to_phone_number = get_receiving_number
   @password.share_password(@user, to_phone_number)
+  access_passwords
 end
 
 def lookup_password
@@ -165,7 +166,7 @@ def get_receiving_number
     response.messages[:valid?] = 'Invalid phone number. Please enter a 10-digit phone number\n With no symbols or spaces.\n Example: 2345678901'
   end
   if yes_no("Are you SURE you want to send your #{@service.name} password to #{number}? (Please make sure the number is correct.")
-    return number
+    return "+1#{number}"
   else
     access_passwords
   end

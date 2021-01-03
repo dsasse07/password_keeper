@@ -22,11 +22,11 @@ class Password < ActiveRecord::Base
     end
 
     def share_password(user, to_phone_number)
-      body = "#{user.display_full_name} has shared a password!\n\n
-              Service Name: #{self.group_service.service.name}\n
-              Username: #{self.group_service.service_username}\n
+      body = "\n#{user.display_full_name} has shared a password!\n
+              Service Name: #{self.group_service.service.name}
+              Username: #{self.group_service.service_username}
               Password: #{self.password}"
-      send_sms(to: to_phone_number, body: body)
+      send_sms(to_phone_number, body)
     end
 
   end
