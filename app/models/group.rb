@@ -58,4 +58,10 @@ class Group < ActiveRecord::Base
     end
   end
 
+  def create_users_list
+    self.users.each_with_object({}) do |user, new_hash|
+        new_hash[user.display_full_name] = user
+    end
+  end
+
 end

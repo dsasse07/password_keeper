@@ -273,7 +273,7 @@ end
     system 'clear'
     # binding.pry
     @user.print_groups
-    choices = ["Add a Group", "Leave a Group", "Add service to existing group", "Remove a service from existing group","Add user to existing group", "Back", "Logout"]
+    choices = ["Add a Group", "Leave a Group", "Add service to existing group", "Remove a service from existing group", "Add user to existing group", "Remove a user from existing group", "Back", "Logout"]
     selection = @@prompt.select("What would you like to do?", choices)
     case selection
     when "Add a Group"
@@ -286,6 +286,8 @@ end
     when "Add service to existing group"
       @group_to_add_to = select_group
       add_service_to_group
+    when "Remove a user from existing group"
+      remove_user_from_group
     when "Remove a service from existing group"
       remove_service
     when "Back"
@@ -371,6 +373,18 @@ end
     puts "✅ #{@user_to_add.app_username} has been added to #{@group_to_add_to.name.capitalize}."
     @@prompt.keypress("Press space or enter to continue", keys: [:space, :return])
     group_settings
+  end
+
+  def remove_user_from_group
+    group_to_remove_user = select_group
+    choices = group_to_remove_user.create_users_list
+    choices.delete(@user.display_full_name)
+    selection = @@prompt.select("Which user would you like to remove?", choices)
+    if yes_no("⚠️ ⚠️ Are you sure you want to remove this user? This action cannot be undone. ⚠️ ⚠️")
+      group_to_remove_user.remove_user_from_group(selection)
+      sleep (1.5)
+    end
+      group_settings
   end
 
 end
