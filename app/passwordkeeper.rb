@@ -8,11 +8,7 @@ class PasswordKeeper
     welcome
     login_or_signup
     say_hi_to_user
-    initial_menu
-
-
-    # display_users_groups
-    
+    initial_menu    
   end
 
   private
